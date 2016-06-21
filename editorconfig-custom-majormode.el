@@ -3,6 +3,7 @@
 ;; Author: 10sr <8slashes+el [at] gmail [dot] com>
 ;; URL: https://github.com/10sr/editorconfig-custom-major-mode-el
 ;; Version: 0.0.1
+;; Package-Requires: ((editorconfig "0.6.0"))
 ;; Keywords: editorconfig util
 
 ;; This file is not part of GNU Emacs.
@@ -33,7 +34,44 @@
 ;; An EditorConfig extension that defines a property to specify which
 ;; Emacs major-mode to use for files.
 
+;; To enable this plugin, add `editorconfig-custom-majormode' to
+;; `editorconfig-custom-hooks':
+
+;; (add-hook 'editorconfig-custom-hooks
+;;           'editorconfig-custom-majormode)
+
 ;;; Code:
+
+;;;###autoload
+(defun editorconfig-custom-majormode (hash)
+  "Get emacs_mode property from HASH and set major mode.
+
+If `package' is installed on your Emacs and the major mode specified is
+installable, this plugin asks whether you want to install and enable it
+automatically."
+  (let* ((mode-str (gethash 'emacs_mode
+                            hash))
+         (mode (and mode-str
+                    (not (string= mode-str
+                                  ""))
+                    (intern (concat mode-str
+                                    "-mode")))))
+    (when (and mode
+               (not (eq mode
+                        major-mode)))
+      (if (fboundp mode)
+          (funcall mode)
+        (if (and (eval-and-compile (require 'package nil t))
+                 (assq mode
+                       package-archive-contents)
+                 (yes-or-no-p (format "Major-mode `%S' not found but available as a package. Install?"
+                                      mode)))
+            (progn
+              (package-install mode)
+              (require mode)
+              (funcall mode))
+          (display-warning :error (format "Major-mode `%S' not found"
+                                          mode)))))))
 
 (provide 'editorconfig-custom-majormode)
 
