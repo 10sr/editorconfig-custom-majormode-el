@@ -1,0 +1,36 @@
+= editorconfig-custom-majormode.el
+
+Decide major-mode from EditorConfig
+
+This package is an EditorConfig extension that defines a property to specify
+which Emacs major-mode to use for files.
+
+If `package.el` is installed on your Emacs and the major-mode specified is
+installable, this plugin asks whether you want to install and enable it
+automatically.
+
+
+== Usage
+
+Add `emacs_mode` to your `.editorconfig` as follows, and `nginx-mode` will be
+always enabled when visiting `*.conf` files.
+
+.`.editorconfig`
+----
+[*.conf]
+emacs_mode = nginx
+----
+
+
+To enable this plugin, add `editorconfig-custom-majormode` to
+`editorconfig-custom-hooks`:
+
+[source,emacslisp]
+----
+(add-hook 'editorconfig-custom-hooks
+          'editorconfig-custom-majormode)
+----
+
+== License
+
+This software is unlicensed. See `LICENSE` for details.
