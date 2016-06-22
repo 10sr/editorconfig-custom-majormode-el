@@ -1,5 +1,7 @@
 = editorconfig-custom-majormode.el
 
+image:https://travis-ci.org/10sr/editorconfig-custom-majormode-el.svg?branch=master["Build Status", link="https://travis-ci.org/10sr/editorconfig-custom-majormode-el"]
+
 Decide major-mode from EditorConfig
 
 This package is an EditorConfig extension that defines a property to specify
