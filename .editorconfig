@@ -11,4 +11,5 @@ insert_final_newline = true
 emacs_mode = adoc
 
 [LICENSE]
+max_line_length = 70
 emacs_mode = text
