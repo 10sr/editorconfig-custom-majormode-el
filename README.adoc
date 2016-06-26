@@ -1,8 +1,8 @@
 = editorconfig-custom-majormode.el
 
-image:https://travis-ci.org/10sr/editorconfig-custom-majormode-el.svg?branch=master["Build Status", link="https://travis-ci.org/10sr/editorconfig-custom-majormode-el"]
-image:https://stable.melpa.org/packages/editorconfig-custom-majormode-badge.svg["MELPA Stable", link="https://stable.melpa.org/#/editorconfig-custom-majormode"]
-image:https://melpa.org/packages/editorconfig-custom-majormode-badge.svg["MELPA", link="https://melpa.org/#/editorconfig-custom-majormode"]
+image:https://travis-ci.org/10sr/editorconfig-custom-majormode-el.svg?branch=master["Build Status", link=https://travis-ci.org/10sr/editorconfig-custom-majormode-el]
+image:https://melpa.org/packages/editorconfig-custom-majormode-badge.svg["MELPA", link=https://melpa.org/#/editorconfig-custom-majormode]
+
 
 
 Decide major-mode from EditorConfig
