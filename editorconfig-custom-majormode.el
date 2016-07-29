@@ -60,7 +60,6 @@
       (let ((parent (get target 'derived-mode-parent)))
         (and parent
              (editorconfig-custom-majormode--is-a-mode-p parent want)))))
-(editorconfig-custom-majormode--is-a-mode-p 'conf-unix-mode 'nginx-mode)
 
 ;;;###autoload
 (defun editorconfig-custom-majormode (hash)
