@@ -53,6 +53,15 @@
 
 ;;; Code:
 
+(defun editorconfig-custom-majormode--is-a-mode-p (target want)
+  "Return non-nil if major mode TARGET is a major mode WANT."
+  (or (eq target
+          want)
+      (let ((parent (get target 'derived-mode-parent)))
+        (and parent
+             (editorconfig-custom-majormode--is-a-mode-p parent want)))))
+(editorconfig-custom-majormode--is-a-mode-p 'conf-unix-mode 'nginx-mode)
+
 ;;;###autoload
 (defun editorconfig-custom-majormode (hash)
   "Get emacs_mode property from HASH and set major mode.
@@ -68,14 +77,14 @@ automatically."
                     (intern (concat mode-str
                                     "-mode")))))
     (when (and mode
-               (not (eq mode
-                        major-mode)))
+               (not (editorconfig-custom-majormode--is-a-mode-p major-mode
+                                                                mode)))
       (if (fboundp mode)
           (funcall mode)
         (if (and (eval-and-compile (require 'package nil t))
                  (assq mode
                        package-archive-contents)
-                 (yes-or-no-p (format "Major-mode `%S' not found but available as a package. Install?"
+                 (yes-or-no-p (format "editorconfig-custom-majormode: Major-mode `%S' not found but available as a package. Install?"
                                       mode)))
             (progn
               (package-install mode)
