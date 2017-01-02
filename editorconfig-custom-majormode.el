@@ -74,7 +74,13 @@ automatically."
                     (not (string= mode-str
                                   ""))
                     (intern (concat mode-str
-                                    "-mode")))))
+                                    "-mode"))))
+         (mmm-classes-str (gethash 'emacs_mmm_classes
+                                   hash))
+         ;; FIXME: Split by comma and make list
+         (ed-mmm-classes (and (not (string= ""
+                                            mmm-classes-str))
+                              (list (intern mmm-classes-str)))))
     (when (and mode
                (not (editorconfig-custom-majormode--is-a-mode-p major-mode
                                                                 mode)))
@@ -90,7 +96,11 @@ automatically."
               (require mode)
               (funcall mode))
           (display-warning :error (format "Major-mode `%S' not found"
-                                          mode)))))))
+                                          mode)))))
+    (when (and ed-mmm-classes
+               (eval-and-compile (require mmm-mode nil t)))
+      (setq mmm-classes ed-mmm-classes)
+      (mmm-mode-on))))
 
 (provide 'editorconfig-custom-majormode)
 
