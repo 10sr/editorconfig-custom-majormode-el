@@ -98,7 +98,7 @@ automatically."
           (display-warning :error (format "Major-mode `%S' not found"
                                           mode)))))
     (when (and ed-mmm-classes
-               (eval-and-compile (require mmm-mode nil t)))
+               (eval-and-compile (require 'mmm-mode nil t)))
       (setq mmm-classes ed-mmm-classes)
       (mmm-mode-on))))
 
