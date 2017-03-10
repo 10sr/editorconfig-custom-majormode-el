@@ -100,6 +100,7 @@ automatically."
                                           mode)))))
     (when (and ed-mmm-classes
                (eval-and-compile (require 'mmm-mode nil t)))
+      (defvar mmm-classes)
       (setq mmm-classes ed-mmm-classes)
       (mmm-mode-on))))
 
