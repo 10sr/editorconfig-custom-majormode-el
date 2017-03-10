@@ -100,8 +100,15 @@ automatically."
                                           mode)))))
     (when (and ed-mmm-classes
                (eval-and-compile (require 'mmm-mode nil t)))
-      (defvar mmm-classes)
-      (setq mmm-classes ed-mmm-classes)
+      (defvar mmm-classes nil)
+      (dolist (class ed-mmm-classes)
+        ;; Expect class is available as mmm-<class> library
+        ;; TODO: auto install
+        (when (require (intern (concat "mmm-"
+                                       (symbol-name class)))
+                       nil t)
+          (add-to-list 'mmm-classes
+                       class)))
       (mmm-mode-on))))
 
 (provide 'editorconfig-custom-majormode)
