@@ -78,7 +78,8 @@ automatically."
          (mmm-classes-str (gethash 'emacs_mmm_classes
                                    hash))
          ;; FIXME: Split by comma and make list
-         (ed-mmm-classes (and (not (string= ""
+         (ed-mmm-classes (and mmm-classes-str
+                              (not (string= ""
                                             mmm-classes-str))
                               (list (intern mmm-classes-str)))))
     (when (and mode
