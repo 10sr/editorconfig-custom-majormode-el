@@ -132,8 +132,7 @@ automatically."
     (when mode
       (editorconfig-custom-majormode--set-majormode mode))
     (when (and ed-mmm-classes
-               ;; TODO install if not found
-               (eval-and-compile (require 'mmm-mode nil t)))
+               (editorconfig-custom-majormode--require-or-install 'mmm-mode))
       (editorconfig-custom-majormode--set-mmm-classes ed-mmm-classes)
       (mmm-mode-on))))
 
