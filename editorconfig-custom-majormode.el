@@ -71,24 +71,28 @@
         (and parent
              (editorconfig-custom-majormode--is-a-mode-p parent want)))))
 
+(defun editorconfig-custom-majormode--require-or-install (lib)
+  "Try to install LIB if not found and load it."
+  (or (require lib nil t)
+      (and (eval-and-compile (require 'package nil t))
+           (assq lib
+                 package-archive-contents)
+           (yes-or-no-p (format "editorconfig-custom-majormode: Library `%S' not found but available as a package. Install?"
+                                lib))
+           (progn
+             (package-install lib)
+             (require lib)))))
+
 (defun editorconfig-custom-majormode--set-majormode (mode)
   "Set majormode to MODE."
   (when (and mode
              (not (editorconfig-custom-majormode--is-a-mode-p major-mode
                                                               mode)))
-    (if (fboundp mode)
+    (if (or (fboundp mode)
+            (editorconfig-custom-majormode--require-or-install mode))
         (funcall mode)
-      (if (and (eval-and-compile (require 'package nil t))
-               (assq mode
-                     package-archive-contents)
-               (yes-or-no-p (format "editorconfig-custom-majormode: Major-mode `%S' not found but available as a package. Install?"
-                                    mode)))
-          (progn
-            (package-install mode)
-            (require mode)
-            (funcall mode))
-        (display-warning :error (format "Major-mode `%S' not found"
-                                        mode))))))
+      (display-warning :error (format "Major-mode `%S' not found"
+                                      mode)))))
 
 (defun editorconig-custom-majormode--set-mmm-classes (classes)
   "Set mmm-classes to CLASSES."
