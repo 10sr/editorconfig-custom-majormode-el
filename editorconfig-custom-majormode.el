@@ -94,7 +94,7 @@
       (display-warning :error (format "Major-mode `%S' not found"
                                       mode)))))
 
-(defun editorconig-custom-majormode--set-mmm-classes (classes)
+(defun editorconfig-custom-majormode--set-mmm-classes (classes)
   "Set mmm-classes to CLASSES."
   (defvar mmm-classes nil)
   (dolist (class classes)
@@ -126,15 +126,15 @@ automatically."
          (ed-mmm-classes (and mmm-classes-str
                               (not (string= ""
                                             mmm-classes-str))
-                              (list (map 'intern
-                                         (split-string mmm-classes-str
-                                                       ","))))))
+                              (mapcar 'intern
+                                      (split-string mmm-classes-str
+                                                    ",")))))
     (when mode
-      (editorconig-custom-majormode--set-majormode))
+      (editorconfig-custom-majormode--set-majormode mode))
     (when (and ed-mmm-classes
                ;; TODO install if not found
                (eval-and-compile (require 'mmm-mode nil t)))
-      (editorconfig-custom-major-mode--set-mmm-classes ed-mmm-classes)
+      (editorconfig-custom-majormode--set-mmm-classes ed-mmm-classes)
       (mmm-mode-on))))
 
 (provide 'editorconfig-custom-majormode)
