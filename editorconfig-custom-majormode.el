@@ -63,6 +63,10 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (defvar mmm-classes)
+  (defvar mmm-classes-alist))
+
 (defun editorconfig-custom-majormode--is-a-mode-p (target want)
   "Return non-nil if major mode TARGET is a major mode WANT."
   (or (eq target
@@ -98,15 +102,18 @@ Return non-nil if LIB has been successfully loaded."
 
 (defun editorconfig-custom-majormode--set-mmm-classes (classes)
   "Set mmm-classes to CLASSES."
-  (defvar mmm-classes nil)
+  (setq mmm-classes nil)
   (dolist (class classes)
     ;; Expect class is available as mmm-<class> library
     ;; TODO: auto install
-    (when (require (intern (concat "mmm-"
-                                   (symbol-name class)))
-                   nil t)
-      (add-to-list 'mmm-classes
-                   class))))
+    (unless (assq class
+                  mmm-classes-alist)
+      (editorconfig-custom-majormode--require-or-install
+       (intern (concat "mmm-"
+                       (symbol-name class)))))
+    ;; Add even when package was not found
+    (add-to-list 'mmm-classes
+                 class)))
 
 ;;;###autoload
 (defun editorconfig-custom-majormode (hash)
