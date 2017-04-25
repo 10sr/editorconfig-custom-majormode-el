@@ -122,7 +122,9 @@ automatically."
          (ed-mmm-classes (and mmm-classes-str
                               (not (string= ""
                                             mmm-classes-str))
-                              (list (intern mmm-classes-str)))))
+                              (list (map 'intern
+                                         (split-string mmm-classes-str
+                                                       ","))))))
     (when mode
       (editorconig-custom-majormode--set-majormode))
     (when (and ed-mmm-classes
