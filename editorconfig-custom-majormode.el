@@ -72,7 +72,9 @@
              (editorconfig-custom-majormode--is-a-mode-p parent want)))))
 
 (defun editorconfig-custom-majormode--require-or-install (lib)
-  "Try to install LIB if not found and load it."
+  "Try to install LIB if not found and load it.
+
+Return non-nil if LIB has been successfully loaded."
   (or (require lib nil t)
       (and (eval-and-compile (require 'package nil t))
            (assq lib
