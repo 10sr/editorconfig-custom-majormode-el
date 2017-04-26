@@ -1,8 +1,8 @@
-;;; editorconfig-custom-majormode.el --- Decide major-mode from EditorConfig
+;;; editorconfig-custom-majormode.el --- Decide major-mode and mmm-mode from EditorConfig
 
 ;; Author: 10sr <8slashes+el [at] gmail [dot] com>
 ;; URL: https://github.com/10sr/editorconfig-custom-major-mode-el
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Package-Requires: ((editorconfig "0.6.0"))
 ;; Keywords: editorconfig util
 
@@ -45,6 +45,16 @@
 ;; [*.conf]
 ;; emacs_mode = nginx
 
+;; Also this library has an experimental mmm-mode support.
+;; To use it, add properties like:
+
+;; [*.conf.j2]
+;; emacs_mode = nginx
+;; emacs_mmm_classes = jinja2
+
+;; Multiple mmm_classes can be specified by separating classes with
+;; commmas.
+
 ;; To enable this plugin, add `editorconfig-custom-majormode' to
 ;; `editorconfig-custom-hooks':
 
@@ -53,6 +63,10 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (defvar mmm-classes)
+  (defvar mmm-classes-alist))
+
 (defun editorconfig-custom-majormode--is-a-mode-p (target want)
   "Return non-nil if major mode TARGET is a major mode WANT."
   (or (eq target
@@ -60,6 +74,46 @@
       (let ((parent (get target 'derived-mode-parent)))
         (and parent
              (editorconfig-custom-majormode--is-a-mode-p parent want)))))
+
+(defun editorconfig-custom-majormode--require-or-install (lib)
+  "Try to install LIB if not found and load it.
+
+Return non-nil if LIB has been successfully loaded."
+  (or (require lib nil t)
+      (and (eval-and-compile (require 'package nil t))
+           (assq lib
+                 package-archive-contents)
+           (yes-or-no-p (format "editorconfig-custom-majormode: Library `%S' not found but available as a package. Install?"
+                                lib))
+           (progn
+             (package-install lib)
+             (require lib)))))
+
+(defun editorconfig-custom-majormode--set-majormode (mode)
+  "Set majormode to MODE."
+  (when (and mode
+             (not (editorconfig-custom-majormode--is-a-mode-p major-mode
+                                                              mode)))
+    (if (or (fboundp mode)
+            (editorconfig-custom-majormode--require-or-install mode))
+        (funcall mode)
+      (display-warning :error (format "Major-mode `%S' not found"
+                                      mode)))))
+
+(defun editorconfig-custom-majormode--set-mmm-classes (classes)
+  "Set mmm-classes to CLASSES."
+  (setq mmm-classes nil)
+  (dolist (class classes)
+    ;; Expect class is available as mmm-<class> library
+    ;; TODO: auto install
+    (unless (assq class
+                  mmm-classes-alist)
+      (editorconfig-custom-majormode--require-or-install
+       (intern (concat "mmm-"
+                       (symbol-name class)))))
+    ;; Add even when package was not found
+    (add-to-list 'mmm-classes
+                 class)))
 
 ;;;###autoload
 (defun editorconfig-custom-majormode (hash)
@@ -81,34 +135,14 @@ automatically."
          (ed-mmm-classes (and mmm-classes-str
                               (not (string= ""
                                             mmm-classes-str))
-                              (list (intern mmm-classes-str)))))
-    (when (and mode
-               (not (editorconfig-custom-majormode--is-a-mode-p major-mode
-                                                                mode)))
-      (if (fboundp mode)
-          (funcall mode)
-        (if (and (eval-and-compile (require 'package nil t))
-                 (assq mode
-                       package-archive-contents)
-                 (yes-or-no-p (format "editorconfig-custom-majormode: Major-mode `%S' not found but available as a package. Install?"
-                                      mode)))
-            (progn
-              (package-install mode)
-              (require mode)
-              (funcall mode))
-          (display-warning :error (format "Major-mode `%S' not found"
-                                          mode)))))
+                              (mapcar 'intern
+                                      (split-string mmm-classes-str
+                                                    ",")))))
+    (when mode
+      (editorconfig-custom-majormode--set-majormode mode))
     (when (and ed-mmm-classes
-               (eval-and-compile (require 'mmm-mode nil t)))
-      (defvar mmm-classes nil)
-      (dolist (class ed-mmm-classes)
-        ;; Expect class is available as mmm-<class> library
-        ;; TODO: auto install
-        (when (require (intern (concat "mmm-"
-                                       (symbol-name class)))
-                       nil t)
-          (add-to-list 'mmm-classes
-                       class)))
+               (editorconfig-custom-majormode--require-or-install 'mmm-mode))
+      (editorconfig-custom-majormode--set-mmm-classes ed-mmm-classes)
       (mmm-mode-on))))
 
 (provide 'editorconfig-custom-majormode)
