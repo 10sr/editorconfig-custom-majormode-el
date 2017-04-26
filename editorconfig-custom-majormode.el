@@ -111,6 +111,10 @@ Return non-nil if LIB has been successfully loaded."
       (editorconfig-custom-majormode--require-or-install
        (intern (concat "mmm-"
                        (symbol-name class)))))
+    ;; Make sure it has been loaded
+    (require (intern (concat "mmm-"
+                             (symbol-name class)))
+             nil t)
     ;; Add even when package was not found
     (add-to-list 'mmm-classes
                  class)))
