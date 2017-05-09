@@ -102,23 +102,22 @@ Return non-nil if LIB has been successfully loaded."
 
 (defun editorconfig-custom-majormode--set-mmm-classes (classes)
   "Set mmm-classes to CLASSES."
-  (let ((-classes nil))
-    (dolist (class classes)
-      ;; Expect class is available as mmm-<class> library
-      ;; TODO: auto install
-      (unless (assq class
-                    mmm-classes-alist)
-        (editorconfig-custom-majormode--require-or-install
-         (intern (concat "mmm-"
-                         (symbol-name class)))))
-      ;; Make sure it has been loaded
-      (require (intern (concat "mmm-"
-                               (symbol-name class)))
-               nil t)
-      ;; Add even when package was not found
-      (add-to-list '-classes
-                   class))
-    (setq mmm-classes -classes)))
+  (setq mmm-classes nil)
+  (dolist (class classes)
+    ;; Expect class is available as mmm-<class> library
+    ;; TODO: auto install
+    (unless (assq class
+                  mmm-classes-alist)
+      (editorconfig-custom-majormode--require-or-install
+       (intern (concat "mmm-"
+                       (symbol-name class)))))
+    ;; Make sure it has been loaded
+    (require (intern (concat "mmm-"
+                             (symbol-name class)))
+             nil t)
+    ;; Add even when package was not found
+    (add-to-list 'mmm-classes
+                 class)))
 
 ;;;###autoload
 (defun editorconfig-custom-majormode (hash)
