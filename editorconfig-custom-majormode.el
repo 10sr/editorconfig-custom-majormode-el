@@ -148,8 +148,7 @@ automatically."
     (when (and ed-mmm-classes
                (editorconfig-custom-majormode--require-or-install 'mmm-mode))
       (editorconfig-custom-majormode--set-mmm-classes ed-mmm-classes)
-      ;;(mmm-mode-on)
-      )))
+      (mmm-mode-on))))
 
 (provide 'editorconfig-custom-majormode)
 
